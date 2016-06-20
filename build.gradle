@@ -1,0 +1,37 @@
+apply plugin: 'java'
+
+task printStuff << {
+	println project.buildDir
+}
+
+
+repositories {
+	mavenCentral()
+}
+
+
+configurations {
+	includeInJar
+}
+
+
+dependencies {
+	//compile group: 'junit', name: 'junit', version: '4.12'
+	//compile group: 'pl.pragmatists', name: 'JUnitParams', version: '1.0.2'
+	compile fileTree(dir: '$buildDir/../src/lib', include: '*.jar')
+	includeInJar fileTree(dir: '$buildDir/../src/lib', include: '*.jar')
+	
+}
+
+task copyToLib(type: Copy, dependsOn: printStuff){
+	into "$buildDir/output/lib"
+	from configurations.includeInJar
+}
+
+jar {
+	// include contents of output dir
+	from "$buildDir/output"
+}
+
+build.dependsOn(copyToLib)
+jar.dependsOn(copyToLib)
